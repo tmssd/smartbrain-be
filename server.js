@@ -10,13 +10,21 @@ const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
+// const db = knex({
+//     client: 'pg',
+//     connection: {
+//         host: '127.0.0.1',
+//         user: 'tms',
+//         password: '',
+//         database: 'smart-brain'
+//     }
+// });
+
 const db = knex({
     client: 'pg',
     connection: {
-        host: '127.0.0.1',
-        user: 'tms',
-        password: '',
-        database: 'smart-brain'
+        connectionString: process.env.DATABESE_URL,
+        ssl: true,
     }
 });
 
