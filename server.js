@@ -29,7 +29,7 @@ const db = knex({
         // ssl: true,
         ssl: {
             rejectUnauthorized: false
-        },
+        }
     }
 });
 
