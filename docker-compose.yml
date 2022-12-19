@@ -22,15 +22,15 @@ services:
       - "6379:6379"
 
   # Backend
-  smart-brain-api:
+  app:
     # env_file:
     #   - ./.private/api-keys.env "Another way to insert env variables"
-    container_name: backend
+    container_name: app
     build: ./
     volumes:
-      - ./:/usr/src/smart-brain-api
+      - ./:/usr/src/app
     command: npm run start:dev
-    working_dir: /usr/src/smart-brain-api
+    working_dir: /usr/src/app
     ports:
       - "3000:3000"
     environment:

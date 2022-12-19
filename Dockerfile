@@ -1,18 +1,18 @@
-FROM node:19.0.0
+FROM node:18-alpine
 
 # Create app directory
-RUN mkdir -p /usr/src/smart-brain-api
-WORKDIR /usr/src/smart-brain-api
+WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package.json /usr/src/smart-brain-api
+COPY package.json .
+COPY package-lock.json .
 RUN npm install
 
 # Bundle app source
-COPY . /usr/src/smart-brain-api
+COPY . .
 
 # Build arguments
-ARG NODE_VERSION=19.0.0
+ARG NODE_VERSION=18-alpine
 
 # Environment
 ENV NODE_VERSION $NODE_VERSION
