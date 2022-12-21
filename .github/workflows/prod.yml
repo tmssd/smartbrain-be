@@ -38,6 +38,8 @@ jobs:
       -
         name: Build Docker Images
         run: docker-compose build
+        with:
+          context: .
       -
         name: Push Docker Images to Docker Hub
         run: |
