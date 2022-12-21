@@ -37,7 +37,7 @@ jobs:
       #     tags: tmssd/smartbrain-back:latest
       -
         name: Build Docker Images
-        run: docker-compose --project-directory ./smartbrain-back/ build
+        run: docker-compose build
       -
         name: Push Docker Images to Docker Hub
         run: |
