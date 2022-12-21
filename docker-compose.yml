@@ -1,6 +1,23 @@
 version: '3.8'
 services:
 
+  # Backend
+  app:
+    # env_file:
+    #   - ./.private/api-keys.env "Another way to insert env variables"
+    image: tmssd/smartbrain-back-app:latest
+    container_name: smartbrain-back-app
+    build: ./
+    volumes:
+      - ./:/usr/src/app
+    command: npm run start:dev
+    working_dir: /usr/src/app
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_URI: postgres://admin:password@postgres:5432/smart-brain
+      REDIS_URI: redis://redis:6379
+
   # PostgreSQL
   postgres:
     image: tmssd/smartbrain-back-postgres:latest
@@ -21,20 +38,3 @@ services:
     container_name: smartbrain-back-redis
     ports:
       - "6379:6379"
-
-  # Backend
-  app:
-    # env_file:
-    #   - ./.private/api-keys.env "Another way to insert env variables"
-    image: tmssd/smartbrain-back-app:latest
-    container_name: smartbrain-back-app
-    build: ./
-    volumes:
-      - ./:/usr/src/app
-    command: npm run start:dev
-    working_dir: /usr/src/app
-    ports:
-      - "3000:3000"
-    environment:
-      POSTGRES_URI: postgres://admin:password@postgres:5432/smart-brain
-      REDIS_URI: redis://redis:6379
