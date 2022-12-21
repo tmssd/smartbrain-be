@@ -3,6 +3,7 @@ services:
 
   # PostgreSQL
   postgres:
+    image: tmssd/smartbrain-back-postgres:latest
     container_name: smartbrain-back-postgres
     build: ./postgres
     environment:
@@ -16,8 +17,8 @@ services:
 
   # Redis
   redis:
-    container_name: smartbrain-back-redis
     image: redis
+    container_name: smartbrain-back-redis
     ports:
       - "6379:6379"
 
@@ -25,6 +26,7 @@ services:
   app:
     # env_file:
     #   - ./.private/api-keys.env "Another way to insert env variables"
+    image: tmssd/smartbrain-back-app:latest
     container_name: smartbrain-back-app
     build: ./
     volumes:

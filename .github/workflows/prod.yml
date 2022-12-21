@@ -27,9 +27,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Check Docker Version
-        run: docker -v
       # -
       #   name: Build and push
       #   uses: docker/build-push-action@v3
@@ -38,3 +35,11 @@ jobs:
       #     push: true
       #     file: Dockerfile
       #     tags: tmssd/smartbrain-back:latest
+      -
+        name: Build Docker Images
+        run: docker-compose --project-directory ./smartbrain-back/ build
+      -
+        name: Push Docker Images to Docker Hub
+        run: |
+          docker image push tmssd/smartbrain-back-app:latest && \
+          docker image push tmssd/smartbrain-back-app:latest
