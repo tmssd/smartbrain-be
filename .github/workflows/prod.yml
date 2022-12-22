@@ -41,7 +41,7 @@ jobs:
         with:
           context: ./postgres
           push: true
-          file: Dockerfile
+          file: ./postgres/Dockerfile
           tags: tmssd/smartbrain-back-postgres:latest
       # -
       #   name: Build Docker Images
