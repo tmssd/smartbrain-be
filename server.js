@@ -49,7 +49,7 @@ app.use(express.json());
 // allows all connections
 /* app.use(cors()) */
 // whitelist connections
-const whitelist = ["http://localhost:3001"];
+const whitelist = ["https://app"];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
