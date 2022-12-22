@@ -37,9 +37,11 @@ jobs:
       #     tags: tmssd/smartbrain-back:latest
       -
         name: Build Docker Images
-        run: docker-compose build
+        run: |
+          docker build --tag tmssd/smartbrain-back-app:latest && \
+          docker build --tag tmssd/smartbrain-back-postgres:latest && \
       -
         name: Push Docker Images to Docker Hub
         run: |
           docker image push tmssd/smartbrain-back-app:latest && \
-          docker image push tmssd/smartbrain-back-app:latest
+          docker image push tmssd/smartbrain-back-postgres:latest
