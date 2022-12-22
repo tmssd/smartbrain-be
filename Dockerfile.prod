@@ -11,5 +11,3 @@ COPY . .
 ARG NODE_VERSION=18-alpine
 # Environment
 ENV NODE_VERSION $NODE_VERSION
-
-RUN npm start
