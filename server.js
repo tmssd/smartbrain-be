@@ -49,7 +49,7 @@ app.use(express.json());
 // allows all connections
 /* app.use(cors()) */
 // whitelist connections
-const whitelist = ["https://app"];
+const whitelist = ["https://smartbrain.thomassoard.com/app"];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
