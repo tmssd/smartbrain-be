@@ -71,7 +71,7 @@ app.get("/", (req, res) => {
   res.send("success");
 });
 /* app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) }) // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs */
-app.post("/signin", signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs
+app.post("/back/signin", signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs
 app.post("/register", (req, res) => {
   register.handleRegister(req, res, db, bcrypt);
 });
