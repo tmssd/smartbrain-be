@@ -7,6 +7,8 @@ COPY package-lock.json .
 RUN npm install
 # Bundle app source
 COPY . .
+# Expose port
+EXPOSE 3000
 # Build arguments
 ARG NODE_VERSION=18-alpine
 # Environment
