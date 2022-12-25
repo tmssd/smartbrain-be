@@ -71,20 +71,20 @@ app.get("/", (req, res) => {
   res.send("success");
 });
 /* app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) }) // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs */
-app.post("/back/signin", signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs
-app.post("/back/register", (req, res) => {
+app.post("/signin", signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs
+app.post("/register", (req, res) => {
   register.handleRegister(req, res, db, bcrypt);
 });
-app.get("/back/profile/:id", auth.requireAuth, (req, res) => {
+app.get("/profile/:id", auth.requireAuth, (req, res) => {
   profile.handleProfileGet(req, res, db);
 });
-app.post("/back/profile/:id", auth.requireAuth, (req, res) => {
+app.post("/profile/:id", auth.requireAuth, (req, res) => {
   profile.handleProfileUpdate(req, res, db);
 });
-app.put("/back/image", auth.requireAuth, (req, res) => {
+app.put("/image", auth.requireAuth, (req, res) => {
   image.handleImage(req, res, db);
 });
-app.post("/back/imageurl", auth.requireAuth, (req, res) => {
+app.post("/imageurl", auth.requireAuth, (req, res) => {
   image.handleApiCall(req, res);
 });
 
