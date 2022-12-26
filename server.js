@@ -68,7 +68,7 @@ app.use(cors());
 app.use(morgan("combined"));
 
 app.get("/", (req, res) => {
-  res.send("success");
+  res.send("success!");
 });
 /* app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) }) // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs */
 app.post("/api/signin", signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs
