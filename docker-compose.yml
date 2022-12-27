@@ -5,8 +5,8 @@ services:
   app:
     # env_file:
     #   - ./.private/api-keys.env "Another way to insert env variables"
-    container_name: smartbrain-back-app
-    image: tmssd/smartbrain-back-app:latest
+    container_name: smartbrain-be-app
+    image: tmssd/smartbrain-be-app:latest
     build: ./
     volumes:
       - ./:/usr/src/app
@@ -20,8 +20,8 @@ services:
 
   # PostgreSQL
   postgres:
-    container_name: smartbrain-back-postgres
-    image: tmssd/smartbrain-back-postgres:latest
+    container_name: smartbrain-be-postgres
+    image: tmssd/smartbrain-be-postgres:latest
     build: ./postgres
     environment:
       POSTGRES_USER: admin
@@ -34,7 +34,7 @@ services:
 
   # Redis
   redis:
-    container_name: smartbrain-back-redis
+    container_name: smartbrain-be-redis
     image: redis
     ports:
       - "6379:6379"

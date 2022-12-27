@@ -28,28 +28,28 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push smartbrain-back-app
+        name: Build and push smartbrain-be-app
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
           file: Dockerfile
-          tags: tmssd/smartbrain-back-app:latest
+          tags: tmssd/smartbrain-be-app:latest
       -
-        name: Build and push smartbrain-back-postgres
+        name: Build and push smartbrain-be-postgres
         uses: docker/build-push-action@v3
         with:
           context: ./postgres
           push: true
           file: ./postgres/Dockerfile
-          tags: tmssd/smartbrain-back-postgres:latest
+          tags: tmssd/smartbrain-be-postgres:latest
       # -
       #   name: Build Docker Images
       #   run: |
-      #     docker build --tag tmssd/smartbrain-back-app:latest . && \
-      #     docker build --tag tmssd/smartbrain-back-postgres:latest --file ./postgres/Dockerfile ./postgres
+      #     docker build --tag tmssd/smartbrain-be-app:latest . && \
+      #     docker build --tag tmssd/smartbrain-be-postgres:latest --file ./postgres/Dockerfile ./postgres
       # -
       #   name: Push Docker Images to Docker Hub
       #   run: |
-      #     docker image push tmssd/smartbrain-back-app:latest && \
-      #     docker image push tmssd/smartbrain-back-postgres:latest
+      #     docker image push tmssd/smartbrain-be-app:latest && \
+      #     docker image push tmssd/smartbrain-be-postgres:latest
