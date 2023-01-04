@@ -1,19 +1,51 @@
-# SmartBrain-api - Dockerized
-Final project for Udemy course - using Docker
+# SmartBrain - backend(Dockerized)
 
-1. Clone this repo
-2. Make sure you have docker installed and running on your computer
-3. Run `docker-compose up` ( you may have to run `docker-compose up --build` for the first setup phase)
-4. You must add your own API key in the `controllers/image.js` file to connect to Clarifai API.
-5. You will also need to update Line 22 in server.js to your client app port
+Final project for "The Complete Web Developer: Zero to Mastery" course by [ZTM academy](https://zerotomastery.io/courses/coding-bootcamp/)
+
+## Description
+
+Web App that allows users to detect faces in pictures using Clarifai's AI API.
+
+Utilized: ES6, React, Node.js, Express, PostgreSQL, Redis, Docker, knex, bcrypt, JWT, Prettier.
+
+## Setup the api
+
+1. Clone this repo and `cd` to the project dir
+
+    ```bash
+    git clone git@github.com:tmssd/smartbrain-be.git && cd smartbrain-be
+    ```
+
+    or
+
+    ```bash
+    git clone https://github.com/tmssd/smartbrain-be.git && cd smartbrain-be
+    ```
+
+2. Launch the api
+
+    for the first setup phase run:
+
+    ```bash docker-compose up --build```
+
+    otherwise run:
+
+    ```bash docker-compose up```
+
+    The api now availbale at `localhost:3000`
+
+NOTE: You must add your own Clarifai API key in the `controllers/image.js` file to connect to Clarifai API. You can grab it [here](https://www.clarifai.com/).
+
+## Tips
 
 To access backend's bash:
-Run `docker-compose exec smart-brain-api bash`
+
+```bash docker-compose -it exec smartbrain-back-app bash```
 
 To access postgres: (adjust PORT number if needed)
-Run  `psql postgres://<username>:<password>@localhost:5432/smart-brain`
+
+```bash psql postgres://<username>:<password>@localhost:5432/smart-brain```
 
 To access redis:
-Run `docker-compose exec redis redis-cli`
 
-You can grab Clarifai API key [here](https://www.clarifai.com/)
+```bash docker-compose exec smartbrain-back-redis redis-cli```
