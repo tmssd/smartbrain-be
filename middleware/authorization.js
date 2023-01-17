@@ -1,4 +1,4 @@
-import { redisClient } from '../controllers/signin.js';
+import { redisClient } from '../server.js';
 
 const requireAuth = (req, res, next) => {
   const { authorization } = req.headers;

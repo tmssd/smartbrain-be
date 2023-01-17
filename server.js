@@ -47,6 +47,11 @@ const db = knex({
 });
  */
 
+// incorporate session management with Redis - setup Redis:
+// see docs at https://www.npmjs.com/package/redis
+import { createClient } from 'redis';
+export const redisClient = createClient(process.env.REDIS_URI);
+
 const app = express();
 
 app.use(express.json());

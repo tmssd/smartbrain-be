@@ -1,9 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { createClient } from 'redis';
-
-// incorporate session management with Redis - setup Redis:
-// see docs at https://www.npmjs.com/package/redis
-const redisClient = createClient(process.env.REDIS_URI);
+import { redisClient } from '../server.js';
 
 // this is a pure funcion that *eventually* returns a promise to whatever funcion is using it
 // this means that it shouldn't return any responces('res')!
@@ -116,4 +112,3 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
 };
 
 export default signinAuthentication;
-export { redisClient };
