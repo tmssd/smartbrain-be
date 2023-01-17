@@ -1,73 +1,117 @@
 const jwt = require('jsonwebtoken');
 const redis = require('redis');
 
-// setup Redis:
+// incorporate session management with Redis - setup Redis:
+// see docs at https://www.npmjs.com/package/redis
 const redisClient = redis.createClient(process.env.REDIS_URI);
 
+// this is a pure funcion that *eventually* returns a promise to whatever funcion is using it
+// this means that it shouldn't return any responces('res')!
 const handleSignin = (db, bcrypt, req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return Promise.reject('incorrect form submission'); // reject and return the promise wich is used in 'signinAuthentication' as a 'handleSignin'
+    // reject and return the promise wich is used in 'signinAuthentication' as a 'handleSignin' '.catch' block
+    // fomelly(before impelementing 'signinAuthentication') the code was:
+    // 'return res.status(400).json('incorrect form submission')
+    return Promise.reject('incorrect form submission');
   }
-  return db.select('email', 'hash').from('login') // we return promise here as well to be used in 'signinAuthentication` as a 'handleSignin'
-    .where('email', '=', email)
-    .then(data => {
-      const isValid = bcrypt.compareSync(password, data[0].hash)
-      if (isValid) {
-        return db.select('*').from('users')
-          .where('email', '=', email)
-          .then(user => user[0])
-          .catch(err => Promise.reject('unable to get user'))
-      } else {
-        Promise.reject('wrong credentials')
-      }
-    })
-    .catch(err => Promise.reject('wrong credentials'))
-}
+  // with promises we ALWAYS want to make sure that we returning them:
+  return (
+    db
+      .select('email', 'hash')
+      .from('login')
+      .where('email', '=', email)
+      // we return promise here as well to be used in 'signinAuthentication` as a 'handleSignin' '.then' block
+      .then((data) => {
+        const isValid = bcrypt.compareSync(password, data[0].hash);
+        if (isValid) {
+          return (
+            db
+              .select('*')
+              .from('users')
+              .where('email', '=', email)
+              .then((user) => user[0]) // get the user
+              // once again we reject and return promise to be used in 'signinAuthentication` as a 'handleSignin' '.catch' block
+              .catch((err) => Promise.reject('unable to get user'))
+          );
+        } else {
+          // once again we reject and return promise to be used in 'signinAuthentication` as a 'handleSignin' '.catch' block
+          Promise.reject('wrong credentials');
+        }
+      })
+      // once again we reject and return promise to be used in 'signinAuthentication` as a 'handleSignin' '.catch' block
+      .catch((err) => Promise.reject('wrong credentials'))
+  );
+};
 
-const getAuthTokenId = (req, res) => {
+// this function gets the userId by its token
+const getAuthUserId = (req, res) => {
   const { authorization } = req.headers;
+  // ('err, reply) => {}' is a callback function of the '.get' method
+  // so 'err' = 'nil' in redis db answer and 'reply' = the actual ID nuber in redis db answer
   return redisClient.get(authorization, (err, reply) => {
+    // if there is an error or no reply
     if (err || !reply) {
+      // we could return a Promise.reject() here and handle it in 'signinAuthentication',
+      // but we return response here in order to not clutter that function too much
       return res.status(400).json('Unauthorized');
     }
+    // we could return a Promise.resolve() here and handle it in 'signinAuthentication',
+    // but we return response here in order to not clutter that function too much
     return res.json({ id: reply });
-  })
-}
+  });
+};
+
+// set token in our Redis database
+const setToken = (key, value) => {
+  // TODO: make New Promise with resolve and reject
+  return Promise.resolve(redisClient.set(key, value));
+};
 
 const signToken = (email) => {
-  const jwtPayload = { email };
-  return jwt.sign(jwtPayload, 'JWT_SECRET', { expiresIn: '2 days' });
-}
-
-const setToken = (key, value) => {
-  return Promise.resolve(redisClient.set(key, value));
-}
+  // see docs at https://www.npmjs.com/package/jsonwebtoken
+  const jwtPayload = { email }; // we sign a token with the user's email(putting it into an object)
+  return jwt.sign(jwtPayload, 'JWT_SECRET', { expiresIn: '2 days' }); // returning generated token
+};
 
 const createSessions = (user) => {
   // create JWT token and return user data
   const { email, id } = user;
-  const token = signToken(email);
-  return setToken(token, id)
-    .then(() => {
-      return { success: 'true', userId: id, token }
-    })
-    .catch(console.log)
-}
+  const token = signToken(email); // we sign a token with the user's email
+  return (
+    setToken(token, id)
+      // onse the token is set and there is no error we gonna return this object
+      .then(() => {
+        return { success: 'true', userId: id, token };
+      })
+      // otherwise we gonna return the error
+      .catch('unable to set token') // for production
+    // .catch(console.log) // for debuging
+  );
+};
 
+// this is the HOF(Hier Order Function) that receives (db, bcrypt) through "dependency injection"
+// from the 'signinAuthentication' handler of '/api/signin' route in 'server.js' and also receives(req, res)
+// and we declaring it here this way beacuse of the declaration of the '/api/signin' route(in the 'server.js')
+// without the '(req, res) => {}' function
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authorization } = req.headers;
-  return authorization ?
-    getAuthTokenId(req, res) :
-    handleSignin(db, bcrypt, req, res)
-      .then(data => {
-        return data.id && data.email ? createSessions(data) : Promies.reject(data)
-      })
-      .then(session => res.json(session))
-      .catch(err => res.status(400).json(err));
-}
+  return authorization
+    ? // if there is authorization header(i.e. user already logged in) then grab user's ID
+      getAuthUserId(req, res)
+    : // if there is no authorization header then perform sign in
+      handleSignin(db, bcrypt, req, res) // 'handleSignin' returns promise here
+        .then((data) => {
+          return data.id && data.email
+            ? createSessions(data)
+            : Promies.reject('wrong credentials'); // for production
+          // : Promies.reject(data); // for debuging purposes(to see in network tab of the browser's dev tools)
+        })
+        .then((session) => res.json(session))
+        .catch((err) => res.status(400).json(err));
+};
 
 module.exports = {
   signinAuthentication: signinAuthentication,
-  redisClient: redisClient
-}
+  redisClient: redisClient,
+};

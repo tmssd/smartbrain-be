@@ -1,20 +1,20 @@
-require("dotenv").config();
-const express = require("express");
-const bcrypt = require("bcrypt");
-const cors = require("cors");
-const knex = require("knex");
-const morgan = require("morgan");
-const { response } = require("express");
+require('dotenv').config();
+const express = require('express');
+const bcrypt = require('bcrypt');
+const cors = require('cors');
+const knex = require('knex');
+const morgan = require('morgan');
+const { response } = require('express');
 
-const register = require("./controllers/register");
-const signin = require("./controllers/signin");
-const profile = require("./controllers/profile");
-const image = require("./controllers/image");
-const auth = require("./controllers/authorization");
+const register = require('./controllers/register');
+const signin = require('./controllers/signin');
+const profile = require('./controllers/profile');
+const image = require('./controllers/image');
+const auth = require('./middleware/authorization');
 
 // Database Setup - for development(dockerized):
 const db = knex({
-  client: "pg",
+  client: 'pg',
   connection: process.env.POSTGRES_URI,
 });
 // Database Setup - for development:
@@ -50,45 +50,59 @@ app.use(express.json());
 /* app.use(cors()) */
 // whitelist connections
 const whitelist = [
-  "https://smartbrain.thomassoard.com:3001",
-  "https://smartbrain.thomassoard.com:3000",
+  'https://smartbrain.thomassoard.com:3001',
+  'https://smartbrain.thomassoard.com:3000',
 ];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error('Not allowed by CORS'));
     }
   },
 };
 app.use(cors());
 // app.use(cors(corsOptions));
 
-app.use(morgan("combined"));
+app.use(morgan('combined'));
 
-app.get("/", (req, res) => {
-  res.send("success!");
+app.get('/', (req, res) => {
+  res.send('success!');
 });
 
-app.get("/api", (req, res) => {
-  res.send("api endpoint!");
+app.get('/api', (req, res) => {
+  res.send('api endpoint!');
 });
-/* app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) }) // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs */
-app.post("/api/signin", signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies the handleRegister function needs
-app.post("/api/register", (req, res) => {
-  register.handleRegister(req, res, db, bcrypt);
+
+/*
+
+app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) }) // here we see what is called 'dependency injection' - we're injecting whatever dependencies('db' and 'bcrypt' in our case) the handleSignin function needs
+
+*/
+
+// Defining 'api/signin' route without '(req, res) => {}' callback, as it will be used in the
+// 'signinAuthentication' handler function (wich itself is a Hier Order Function) from the 'signin.js'.
+// This is considered as a more cleaner way of defining routes.
+app.post('/api/signin', signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies('db' and 'bcrypt' in our case) the handleRegister function needs
+
+app.post('/api/register', (req, res) => {
+  register.handleRegister(req, res, db, bcrypt); // here we see what is called 'dependency injection' - we're injecting whatever dependencies('db' and 'bcrypt' in our case) the handleRegister function needs
 });
-app.get("/api/profile/:id", auth.requireAuth, (req, res) => {
+
+app.get('/api/profile/:id', auth.requireAuth, (req, res) => {
   profile.handleProfileGet(req, res, db);
 });
-app.post("/api/profile/:id", auth.requireAuth, (req, res) => {
+
+app.post('/api/profile/:id', auth.requireAuth, (req, res) => {
   profile.handleProfileUpdate(req, res, db);
 });
-app.put("/api/image", auth.requireAuth, (req, res) => {
+
+app.put('/api/image', auth.requireAuth, (req, res) => {
   image.handleImage(req, res, db);
 });
-app.post("/api/imageurl", auth.requireAuth, (req, res) => {
+
+app.post('/api/imageurl', auth.requireAuth, (req, res) => {
   image.handleApiCall(req, res);
 });
 
