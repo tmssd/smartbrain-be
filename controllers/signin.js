@@ -60,7 +60,7 @@ const getAuthUserId = (req, res) => {
 
 // set token in our Redis database
 const setToken = (key, value) => {
-  // TODO: make New Promise with resolve and reject
+  // TODO: make 'new Promise' with resolve and reject
   return Promise.resolve(redisClient.set(key, value));
 };
 
