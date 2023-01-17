@@ -1,9 +1,9 @@
-const jwt = require('jsonwebtoken');
-const redis = require('redis');
+import jwt from 'jsonwebtoken';
+import { createClient } from 'redis';
 
 // incorporate session management with Redis - setup Redis:
 // see docs at https://www.npmjs.com/package/redis
-const redisClient = redis.createClient(process.env.REDIS_URI);
+const redisClient = createClient(process.env.REDIS_URI);
 
 // this is a pure funcion that *eventually* returns a promise to whatever funcion is using it
 // this means that it shouldn't return any responces('res')!
@@ -95,6 +95,7 @@ const createSessions = (user) => {
 // and we declaring it here this way beacuse of the declaration of the '/api/signin' route(in the 'server.js')
 // without the '(req, res) => {}' function
 const signinAuthentication = (db, bcrypt) => (req, res) => {
+  // console.log(req);
   const { authorization } = req.headers;
   return authorization
     ? // if there is authorization header(i.e. user already logged in) then grab user's ID
@@ -104,14 +105,15 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
         .then((data) => {
           return data.id && data.email
             ? createSessions(data)
-            : Promies.reject('wrong credentials'); // for production
+            : Promise.reject('wrong credentials'); // for production
           // : Promies.reject(data); // for debuging purposes(to see in network tab of the browser's dev tools)
         })
         .then((session) => res.json(session))
-        .catch((err) => res.status(400).json(err));
+        .catch(
+          (err) => res.status(400).json(`Sign In Authentification failed`) // for production
+          // res.status(400).json(`Sign In Authentification failed --> "${err}"`) // for debuging
+        );
 };
 
-module.exports = {
-  signinAuthentication: signinAuthentication,
-  redisClient: redisClient,
-};
+export default signinAuthentication;
+export { redisClient };

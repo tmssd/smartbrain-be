@@ -1,4 +1,4 @@
-const redisClient = require('../controllers/signin').redisClient;
+import { redisClient } from '../controllers/signin.js';
 
 const requireAuth = (req, res, next) => {
   const { authorization } = req.headers;
@@ -14,6 +14,4 @@ const requireAuth = (req, res, next) => {
   });
 };
 
-module.exports = {
-  requireAuth: requireAuth,
-};
+export default requireAuth;

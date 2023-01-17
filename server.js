@@ -1,18 +1,24 @@
-require('dotenv').config();
-const express = require('express');
-const bcrypt = require('bcrypt');
-const cors = require('cors');
-const knex = require('knex');
-const morgan = require('morgan');
-const { response } = require('express');
+import * as dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import bcrypt from 'bcrypt';
+import cors from 'cors';
+import knex from 'knex';
+import morgan from 'morgan';
+// const { response } = require('express');
 
-const register = require('./controllers/register');
-const signin = require('./controllers/signin');
-const profile = require('./controllers/profile');
-const image = require('./controllers/image');
-const auth = require('./middleware/authorization');
+import requireAuth from './middleware/authorization.js';
+// import image from './controllers/image.cjs';
+import { handleImage, handleApiCall } from './controllers/image.js';
+// const image = require('./controllers/image.cjs');
+import {
+  handleProfileGet,
+  handleProfileUpdate,
+} from './controllers/profile.js';
+import handleRegister from './controllers/register.js';
+import signinAuthentication from './controllers/signin.js';
 
-// Database Setup - for development(dockerized):
+// Database Setup Dockerized - for development and production:
 const db = knex({
   client: 'pg',
   connection: process.env.POSTGRES_URI,
@@ -84,26 +90,26 @@ app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) })
 // Defining 'api/signin' route without '(req, res) => {}' callback, as it will be used in the
 // 'signinAuthentication' handler function (wich itself is a Hier Order Function) from the 'signin.js'.
 // This is considered as a more cleaner way of defining routes.
-app.post('/api/signin', signin.signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies('db' and 'bcrypt' in our case) the handleRegister function needs
+app.post('/api/signin', signinAuthentication(db, bcrypt)); // here we see what is called 'dependency injection' - we're injecting whatever dependencies('db' and 'bcrypt' in our case) the handleRegister function needs
 
 app.post('/api/register', (req, res) => {
-  register.handleRegister(req, res, db, bcrypt); // here we see what is called 'dependency injection' - we're injecting whatever dependencies('db' and 'bcrypt' in our case) the handleRegister function needs
+  handleRegister(req, res, db, bcrypt); // here we see what is called 'dependency injection' - we're injecting whatever dependencies('db' and 'bcrypt' in our case) the handleRegister function needs
 });
 
-app.get('/api/profile/:id', auth.requireAuth, (req, res) => {
-  profile.handleProfileGet(req, res, db);
+app.get('/api/profile/:id', requireAuth, (req, res) => {
+  handleProfileGet(req, res, db);
 });
 
-app.post('/api/profile/:id', auth.requireAuth, (req, res) => {
-  profile.handleProfileUpdate(req, res, db);
+app.post('/api/profile/:id', requireAuth, (req, res) => {
+  handleProfileUpdate(req, res, db);
 });
 
-app.put('/api/image', auth.requireAuth, (req, res) => {
-  image.handleImage(req, res, db);
+app.put('/api/image', requireAuth, (req, res) => {
+  handleImage(req, res, db);
 });
 
-app.post('/api/imageurl', auth.requireAuth, (req, res) => {
-  image.handleApiCall(req, res);
+app.post('/api/imageurl', requireAuth, (req, res) => {
+  handleApiCall(req, res);
 });
 
 const PORT = process.env.PORT || 3000;

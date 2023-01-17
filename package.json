@@ -10,6 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "module",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "clarifai-nodejs-grpc": "^8.0.0",

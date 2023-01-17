@@ -1,4 +1,6 @@
-const { ClarifaiStub, grpc } = require("clarifai-nodejs-grpc");
+// const { ClarifaiStub, grpc } = require('clarifai-nodejs-grpc');
+import * as clarifai from 'clarifai-nodejs-grpc';
+const { ClarifaiStub, grpc } = clarifai;
 
 // const apiKey = process.env.CLARIFAI_API;
 // const app = new Clarifai.App({
@@ -43,7 +45,7 @@ const handleApiCall = (req, res) => {
 
   // This will be used by every Clarifai endpoint call
   const metadata = new grpc.Metadata();
-  metadata.set("authorization", "Key " + PAT);
+  metadata.set('authorization', 'Key ' + PAT);
 
   stub.PostModelOutputs(
     {
@@ -63,7 +65,7 @@ const handleApiCall = (req, res) => {
 
       if (response.status.code !== 10000) {
         throw new Error(
-          "Post model outputs failed, status: " + response.status.description
+          'Post model outputs failed, status: ' + response.status.description
         );
       }
       res = res.json(response);
@@ -73,17 +75,14 @@ const handleApiCall = (req, res) => {
 
 const handleImage = (req, res, db) => {
   const { id } = req.body;
-  db("users")
-    .where("id", "=", id)
-    .increment("entries", 1)
-    .returning("entries")
+  db('users')
+    .where('id', '=', id)
+    .increment('entries', 1)
+    .returning('entries')
     .then((entries) => {
       res.json(entries[0]);
     })
-    .catch((err) => res.status(400).json("unable to get entries"));
+    .catch((err) => res.status(400).json('unable to get entries'));
 };
 
-module.exports = {
-  handleImage,
-  handleApiCall,
-};
+export { handleImage, handleApiCall };
