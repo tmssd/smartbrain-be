@@ -47,7 +47,7 @@ NOTE: You must add your own Clarifai API key in the `controllers/image.js` file 
 To access backend's bash:
 
 ```bash
-docker-compose -it exec smartbrain-be-app bash
+docker exec -it smartbrain-be-app bash
 ```
 
 To access postgres: (adjust PORT number if needed)
@@ -59,5 +59,5 @@ psql postgres://<username>:<password>@localhost:5432/smart-brain
 To access redis:
 
 ```bash
-docker-compose exec smartbrain-be-redis redis-cli
+docker exec -it smartbrain-be-redis redis-cli
 ```
