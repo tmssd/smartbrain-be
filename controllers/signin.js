@@ -26,7 +26,8 @@ const handleSignin = (db, bcrypt, req, res) => {
               .select('*')
               .from('users')
               .where('email', '=', email)
-              .then((user) => user[0]) // get the user
+              // get the user - knex returns us an array of inserted to db rows, so we use here 'user[0]' and it only means, that we don't want to get it as an array, we want the response to be the object only instead
+              .then((user) => user[0])
               // once again we reject and return promise to be used in 'signinAuthentication` as a 'handleSignin' '.catch' block
               .catch((err) => Promise.reject('unable to get user'))
           );
@@ -70,7 +71,7 @@ const signToken = (email) => {
   return jwt.sign(jwtPayload, 'JWT_SECRET', { expiresIn: '2 days' }); // returning generated token
 };
 
-const createSessions = (user) => {
+const createSession = (user) => {
   // create JWT token and return user data
   const { email, id } = user;
   const token = signToken(email); // we sign a token with the user's email
@@ -91,7 +92,6 @@ const createSessions = (user) => {
 // and we declaring it here this way beacuse of the declaration of the '/api/signin' route(in the 'server.js')
 // without the '(req, res) => {}' function
 const signinAuthentication = (db, bcrypt) => (req, res) => {
-  // console.log(req);
   const { authorization } = req.headers;
   return authorization
     ? // if there is authorization header(i.e. user already logged in) then grab user's ID
@@ -100,7 +100,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
       handleSignin(db, bcrypt, req, res) // 'handleSignin' returns promise here
         .then((data) => {
           return data.id && data.email
-            ? createSessions(data)
+            ? createSession(data)
             : Promise.reject('wrong credentials'); // for production
           // : Promies.reject(data); // for debuging purposes(to see in network tab of the browser's dev tools)
         })

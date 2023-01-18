@@ -15,7 +15,8 @@ const handleProfileGet = (req, res, db) => {
 
 const handleProfileUpdate = (req, res, db) => {
   const { id } = req.params; // TODO: here the check of 'id' validity is also needed
-  const { name, age, pet } = req.body.formInput;
+  const { name } = req.body.formInput;
+  // const { name, age, pet } = req.body.formInput;
   db('users')
     .where({ id })
     .update({ name })
