@@ -78,6 +78,9 @@ app.use(cors());
 
 app.use(morgan('combined'));
 
+const removeToken = (key, value) =>
+  Promise.resolve(redisClient.del(key, value));
+
 app.get('/', (req, res) => {
   res.send('success!');
 });
@@ -115,6 +118,17 @@ app.put('/api/image', requireAuth, (req, res) => {
 
 app.post('/api/imageurl', requireAuth, (req, res) => {
   handleApiCall(req, res);
+});
+
+app.delete('/api/logout', (req, res) => {
+  removeToken(req.body.userID, req.body.token)
+    .then(res.status(200).json('user token has been successfully invalidated'))
+    .catch((err) =>
+      res.status(400).json(
+        `unable to invalidate user token` // for production
+        // `unable to invalidate user token due to following error: ${err}` // for debuging
+      )
+    );
 });
 
 const PORT = process.env.PORT || 3000;
