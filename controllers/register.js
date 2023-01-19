@@ -10,7 +10,8 @@ const setToken = (key, value) => {
 const signToken = (email) => {
   // see docs at https://www.npmjs.com/package/jsonwebtoken
   const jwtPayload = { email }; // we sign a token with the user's email(putting it into an object)
-  return jwt.sign(jwtPayload, 'JWT_SECRET', { expiresIn: '2 days' }); // returning generated token
+  const JWT_SECRET = process.env.JWT_SECRET;
+  return jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '2 days' }); // returning generated token
 };
 
 const createSession = (user) => {
